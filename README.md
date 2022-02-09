@@ -5,6 +5,7 @@
 - [Practicando algo de código](#practicando-algo-de-código)
   - [Realizando requests con python](#realizando-requests-con-python)
 - [Crear proyecto con Django](#crear-proyecto-con-django)
+  - [Buenas practicas django](#buenas-practicas-django)
 - [Crear una API con django](#crear-una-api-con-django)
   - [Gestión de archvos staticos con django](#gestión-de-archvos-staticos-con-django)
 - [Django Rest Framework - DRF](#django-rest-framework---drf)
@@ -351,6 +352,219 @@ urlpatterns = [
 urlpatterns+= static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
 urlpatterns+= static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 ```
+
+## Buenas practicas django 
+
+1. si tenemos que usar datos comprometidos, como passwords para la bbdd o  API keys podemos crear nuestras variables de entorno en el servidor (producción) o en un archivo .env en local (siempre debe ir en el mismo directorio dnd se encuentra settings.py). Sea como sea deberemos instalar el paquete `django-environ` que nos permitirá leer las variables de entorno del SSOO y tb podemos cargar un archivo .env si existiera.
+
+En los archivos .env no poner nunca el valor de las variables entre comillas siempre NAME=David
+Una ventaja de usar el paquete django-environ, es que podemos definir el tipo de dato de la variable por ej  `env.str('NAME')` or `env.bool('DEBUG')`
+
+```python
+
+# en settings.py
+
+
+# environ init
+environ.Env.read_env() # si hay archivo .env lo leerá y cargará las variables
+env = environ.Env()
+print(env.str('NAME')) 
+```
+
+2. Dividir el archivo settings.py en mínimo tres archivos, local.py, base.py, production.py y los guardamos en un directorio `settings` dentro del directorio `config`
+
+![not found](img/28.png)
+
+y borramos el archivo settings original
+
+```python
+# en base pondremos
+
+
+import environ
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# environ init
+environ.Env.read_env()
+env = environ.Env()
+print(env.str('NAME'))
+print(env.str('NAME2'))
+  
+ 
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-j^vj91ngcuc(b)do^m!hu9!_c!z*krrrr@@*j&h0@gl-r*ta%('
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True 
+
+ALLOWED_HOSTS = []
+
+
+# Application definition
+
+BASE_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+
+LOCAL_APPS = [
+  'apps.miApp',
+]
+THIRD_APPS = [
+  'rest_framework',
+  
+  ]
+
+INSTALLED_APPS = BASE_APPS+LOCAL_APPS+THIRD_APPS
+
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = 'config.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'config.wsgi.application'
+
+
+# Password validation
+# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/4.0/topics/i18n/
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.0/howto/static-files/
+STATIC_URL = 'static/'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+```
+
+
+```python
+# en local
+
+from .base import *
+import os
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True 
+
+ALLOWED_HOSTS = []
+
+# Database
+# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.0/howto/static-files/
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (BASE_DIR, 'static')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+```
+
+```python
+
+# en producction
+
+from .base import *
+import os
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True 
+
+ALLOWED_HOSTS = []
+# Database
+# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.0/howto/static-files/
+
+STATIC_URL = 'static/'
+```
+
+**Finalmente debemos cambiar algunos archivos como manage.py, wsgi.py y asgi.py**
+
+```python
+# en manage.py
+
+def main():
+    """Run administrative tasks."""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
+
+# en wsgi.py
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
+
+# en asgi.py
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
+```
+
+y ya estaría todo listo para arrancar el server.
+
 
 A partir de aquí ya podemos empezar a desarrollar la lógica y las plantillas html.
 
