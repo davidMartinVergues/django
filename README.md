@@ -568,6 +568,8 @@ y ya estaría todo listo para arrancar el server.
 
 A partir de aquí ya podemos empezar a desarrollar la lógica y las plantillas html.
 
+
+
 # Crear una API con django
 
 ## Gestión de archvos staticos con django
