@@ -122,15 +122,15 @@ Posteriormente debemos registrar la nueva app en el archivo settings.py en la li
 
 1. ### Estructura de una aplicación
 
-1. directorio migrations 
+- directorio migrations 
 
 Es donde se guardarán todos los archivos resultantes al realizar una migración. Una migración es cuando desde código python generamos una tabla en nuestro gestor de bbdd. 
 
-2. admin.py 
+- admin.py 
 
 es dnd podemos registrar los modelos(tablas de bbdd) para que puedan ser reconocidos por el admin de django (localhost:8000/admin) 
 
-3. apps.py 
+- apps.py 
 
 nos permite añadir configuraciones extra a nuestra aplicación. Debemos hacer una pequeña modificación al utilizar un directorio apps. 
 
@@ -143,15 +143,16 @@ class LibroConfig(AppConfig):
     name = 'apps.libro'
 
 ```
-4. models.py
+
+- models.py
 
 es dnd crearemos los modelos, son una clase de python pero que representa una tabla en la bbdd. 
 
-5. test.py 
+- test.py 
 
 django incluye soporte para realizar test tanto de nuestra lógica de la app como de la creación de los modelos etc...
 
-6. views.py 
+- views.py 
 
 en este archivo es donde tendremos la lógica de la aplicación.
 
