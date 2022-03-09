@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+{% block title %}Creación de un Autor{% endblock title %}
+
+{% block body %}
+
+<form method="post">
+    {% csrf_token %}
+    {% if error %}
+        <h2>{{ error }}</h2>
+        <a href="{% url 'libro:listar_autores'  %}">Volver</a>
+    {% else %}
+        <label for="apellidos">apellidos</label>
+        <input type="text" name="apellidos" id="apellidos">
+        <label for="name">Nombre</label>
+        <input type="text" name="nombre" id="nombre">
+        <label for="nacionalidad">Nacionalidad</label>
+        <input type="text" name="nacionalidad" id="nacionalidad">
+        <label for="name">descripcion</label>
+        <input type="text" name="descripcion" id="descripcion">
+        <button type="submit">Enviar</button>
+    {% endif %}
+</form>
+
+{% endblock body %}
+

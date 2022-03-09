@@ -1,0 +1,14 @@
+{% extends 'index.html' %}
+{% block title %}Listar autores{% endblock title %}Listar autores
+
+{% block body %}    
+    {% if error %}
+        <h2>{{error}}</h2>
+        <h3>id : {{ id }} not found</h3>
+        
+        <a href="{% url 'libro:listar_autores'  %}">Voolver</a>
+    {% endif %}
+
+{% endblock body %} 
+
+

@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+{% block title %}Creación de un Autor{% endblock title %}
+
+{% block body %}
+
+<form method="post">
+    {% csrf_token %}
+    {% if error %}
+        <h2>{{ error }}</h2>
+        <a href="{% url 'libro:listar_autores'  %}">Volver</a>
+    {% else %}
+        {{autor_form.as_p}}
+        <button type="submit">Enviar</button>
+    {% endif %}
+</form>
+
+{% endblock body %}
+
