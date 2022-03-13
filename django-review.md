@@ -64,6 +64,7 @@
     - [Personalizar django Admin](#personalizar-django-admin)
     - [Añadir una sección de escritura y edición de textos](#añadir-una-sección-de-escritura-y-edición-de-textos)
     - [Añadir archivos estáticos](#añadir-archivos-estáticos)
+    - [](#)
   - [Vistas basadas en clases](#vistas-basadas-en-clases)
 
 
@@ -215,7 +216,10 @@ Previamente debemos tener creada nuestra bbdd a la cual nos queremos conectar, e
 
 Para conectas django a postgtres debemos ayudarnos de una libreria extra `psycopg2` que la usaremos como conector entre django y postgres.
 
-`pip install psycopg2`
+```
+pip install psycopg2
+
+```
 
 si nos da errror instalar
 
@@ -245,7 +249,12 @@ Para no exponer datos importantes como nombre de usuario t password podemos opta
 
 Así que haremos una comprobación, si existen variables de entorno llamadas USER,PASSWORD,HOST,POST las cogerá si no es el caso utilizará las del archivo .env
 
-para ello debemos instalar `pip install python-dotenv` que me permite cargar las variables guardadas en un .env file. Para buscar variables de entorno utilizo el paquete `os`.
+para ello debemos instalar
+
+```
+pip install python-dotenv
+```
+que me permite cargar las variables guardadas en un .env file. Para buscar variables de entorno utilizo el paquete `os`.
 
 Para usar `dotenv` tenemos dos opciones o usamos la función `load_dotenv()` lo que cargará las variables guardadas en el archivo .env como si fueran variables de entorno por lo que serán accesibles mediante `os.getenv('NAME)` por defecto este modo no sobreescribe las variables de entorno si existiera.
 
@@ -306,10 +315,16 @@ create database biblioteca;
 ```
 
 
-Necesitamos una librería extra para la conexión con mySQL `pip install mysqlclient`
+Necesitamos una librería extra para la conexión con mySQL 
+```
+pip install mysqlclient
+```
 antes de instalar debemos instalar ciertas dependencias en nuestro SSOO mediante 
 
-`sudo apt-get install python3-dev default-libmysqlclient-dev build-essential`
+```
+sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
+
+```
 
 los settings serían:
 
@@ -533,7 +548,7 @@ En nuestro caso el modelo Libro tiene una FK que hace referencia a Autor pues qu
 
 ### OneToOneField
 
-En nuestro caso sería cuando un Libro solo puede tener un Autor y un Autor solo puede aber escrito un Libro.
+En nuestro caso sería cuando un Libro solo puede tener un Autor y un Autor solo puede haber escrito un Libro.
 
 Si establecemos una relación del tipo one-to-one usaremos un campo `OneToOneField` pero entonces estamos obligados a especificar dos atributos:
 
@@ -623,6 +638,16 @@ urlpatterns = [
 ]
 
 ```
+
+El include acepta una tuple formada por la ruta a donde se encuentra el archivo urls de la aplicación y un nombre que representa a todas las urls de la aplicación libro. Esto nos sirve para poder construir urls de una manera muy sencilla. Por ejemplo podems hacer lo siguiente en un template:
+
+```HTML 
+<li class="nav-item">
+    <a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'libro:index' %}">Inicio</a>
+</li>
+```
+libro:index, significa que de las urls de libro crea un enlace a la url index.
+
 #### archivo urls de una app
 
 Para que django reconozca un archivo de urls éste debe contener una lista llamada `urlpatterns`
@@ -834,6 +859,16 @@ urlpatterns = [
     <h1>No existen autores</h1>
 {% endif %}
 {% endblock body %}
+
+```
+
+si en un template tenemos que renderizar texto escrito en html debemos poner lo sigueinte 
+
+```HTML 
+
+{% block post_detail %}
+    {{post_detail.contenido | safe}}
+{% endblock post_detail %}
 
 ```
 
@@ -1205,6 +1240,16 @@ El resultado de un `get`es el objeto
 <Autor: David>
 ```
 
+- Consulta con filtros en campos que son ForeignKey
+
+```python
+Post.objects.filter(
+    estado=True,
+    categoria= Categoria.objects.get(nombre='General'))
+) 
+```
+En este caso si yo filtrara por categoria debería poner el id de la categoria correspondiente pero en su lugar puedo recuperar todo el objeto. Entonces filtra directamente por ese objeto
+
 ## Enviar parámetros por URLs 
 
 Hay dos maneras para crear una URL, con `path()` y con `re_path()` ésta última es en django 1.
@@ -1225,7 +1270,14 @@ re_path(r'^crear_autor/(?P<id>\d+)',crearAutor,name='crear_autor')
 
 ## Blog con function based views 
 
-El campo slug sirve para no tener que exponer el id en la url y en su lugar poner un campo slug.
+El campo slug sirve para no tener que exponer el id en la url y en su lugar poner un campo slug. Por ejemplo en el siguiente modelo
+
+```python
+class Post (models.Model):
+    id = models.AutoField(primary_key=True)
+    titulo = models.CharField('Titulo', max_length=90, null=False, blank=False)
+    slug = models.CharField("Slug", max_length=100,null=False, blank=False) 
+```
 
 ### Personalizar django Admin
 
@@ -1352,11 +1404,16 @@ STATICFILES_DIRS = [
 y ahora debemos uncluir nuestros archivos estáticos en nuestros HTML 
 
 ```HTML 
+
 {% load static %}
+
 <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
 <header class="masthead" style="background-image: url('{% static 'img/home-bg.jpg' %}')">
  <script src="{% static 'js/scripts.js' %}"></script>
 ```
+
+### 
+
 
 ## Vistas basadas en clases
 
