@@ -17,7 +17,7 @@ class AutorResource(resources.ModelResource):
 class CategoriaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     # barra de búsqueda
     search_fields= ['nombre']
-    list_display = ('nombre','estado','fecha_creacion')
+    list_display = ('id','nombre','estado','fecha_creacion')
     resource_class= CategoriaResource
 
 class AutorAdmin(ImportExportModelAdmin, admin.ModelAdmin):
