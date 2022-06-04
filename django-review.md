@@ -64,11 +64,13 @@
     - [Personalizar django Admin](#personalizar-django-admin)
     - [Añadir una sección de escritura y edición de textos](#añadir-una-sección-de-escritura-y-edición-de-textos)
     - [Añadir archivos estáticos](#añadir-archivos-estáticos)
-    - [](#)
+    - [Sistema de plantillas y categorias en templates](#sistema-de-plantillas-y-categorias-en-templates)
   - [Vistas basadas en clases](#vistas-basadas-en-clases)
 
 
 # Django 
+
+source : [curso de developer.pe (youtube)](https://www.youtube.com/playlist?list=PLMbRqrU_kvbTGg_oUKXyWi63Mo9Yoot9K)
 
 Django sigue el patrón de diseño => M (modelo) - V (vista) - T (template)
 
@@ -122,7 +124,7 @@ Django sigue el patrón de diseño => M (modelo) - V (vista) - T (template)
   ] 
   ```  
 
-**WSGI_APPLICATION**, esto es para producción indica al servior cómo levantar nuetsra aplicación y como recibirá las comunicaciones.  
+**WSGI_APPLICATION**, esto es para producción indica al servidor cómo levantar nuestra aplicación y como recibirá las comunicaciones.  
 
 **DATABASES**, es la configuración de las bbdd q usará django por defecto usará sqlite3 pero puede usar postgresql, mysql mongodb.  
 
@@ -1412,7 +1414,7 @@ y ahora debemos uncluir nuestros archivos estáticos en nuestros HTML
  <script src="{% static 'js/scripts.js' %}"></script>
 ```
 
-### 
+### Sistema de plantillas y categorias en templates
 
 
 ## Vistas basadas en clases
