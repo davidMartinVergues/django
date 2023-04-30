@@ -1,7 +1,7 @@
 - [Django](#django)
   - [creación de un proyecto django](#creación-de-un-proyecto-django)
   - [Estructura del proyecto](#estructura-del-proyecto)
-    - [Archivo settings](#archivo-settings)
+    - [Estructura del archivo settings](#estructura-del-archivo-settings)
     - [archivo urls](#archivo-urls)
   - [Modelo-vista-template](#modelo-vista-template)
   - [Aplicación de django](#aplicación-de-django)
@@ -10,7 +10,7 @@
     - [conexión a postgreSQL](#conexión-a-postgresql)
     - [conexión a MySQL](#conexión-a-mysql)
   - [Modelo en django](#modelo-en-django)
-    - [auto_now vs auto_now_add](#auto_now-vs-auto_now_add)
+    - [auto\_now vs auto\_now\_add](#auto_now-vs-auto_now_add)
   - [Sitio de administración de Django](#sitio-de-administración-de-django)
     - [Grupos](#grupos)
     - [Usuarios](#usuarios)
@@ -18,14 +18,14 @@
     - [dunder method in django model](#dunder-method-in-django-model)
       - [def __str__](#def-str)
     - [class Meta de los modelos en django](#class-meta-de-los-modelos-en-django)
-      - [verbose_name / verbose_name_plural](#verbose_name--verbose_name_plural)
+      - [verbose\_name / verbose\_name\_plural](#verbose_name--verbose_name_plural)
       - [ordenar los objetos - ordering](#ordenar-los-objetos---ordering)
       - [abstract](#abstract)
-      - [app_label](#app_label)
+      - [app\_label](#app_label)
       - [proxy](#proxy)
       - [permissions](#permissions)
   - [Relaciones entre django Models](#relaciones-entre-django-models)
-    - [on_delete](#on_delete)
+    - [on\_delete](#on_delete)
     - [OneToOneField](#onetoonefield)
     - [one-to-many](#one-to-many)
     - [many-to-many](#many-to-many)
@@ -38,7 +38,7 @@
       - [templates](#templates)
   - [Function based views](#function-based-views)
     - [Crear un autor](#crear-un-autor)
-      - [POST-is_valid-save](#post-is_valid-save)
+      - [POST-is\_valid-save](#post-is_valid-save)
       - [views](#views-1)
       - [CSRF middleware](#csrf-middleware)
     - [Listar autores](#listar-autores)
@@ -80,11 +80,27 @@ Django sigue el patrón de diseño => M (modelo) - V (vista) - T (template)
 2. creamos el virtual environment y lo activamos
 3. instalamos django en el virtual environment `pip install django` o `pip install django==2.1`
 4. creamos el proyecto `django-admin startproject biblioteca`
-5. renombramos el directorio a `config` y hacemos los propio con todas las referencias a este 
+5. renombramos el directorio a `config` y hacemos los propio con todas las referencias a este
+
+
+> cuando instalamos django en un entorno virtual el framework se instala en la siguiente ruta:
+
+![not found](img/47.png)
+
 
 ## Estructura del proyecto
 
-### Archivo settings 
+Cuando creamos cualquier proyecto de django se genera una carpeta con el nombre del proyecto y dentro de esta otra carpeta con el mismo nombre, esta carpeta contiene los archivos de configuración de django (settings.py, urls.py, wsgi.py y asgi.py)  y un archivo `manage.py`. 
+
+![not found](img/48.png)
+
+
+Este archivo es muy importante xq contendrá las configuraciones que tiene nuestro proyecto ya que establece como variable de entorno `DJANGO_SETTINGS_MODULE` nuestro archivo settings del proyecto.
+
+
+
+
+### Estructura del archivo settings 
 
  **SECRET_KEY**, es única para cada proyecto. Está encriptada.  
 
@@ -92,8 +108,9 @@ Django sigue el patrón de diseño => M (modelo) - V (vista) - T (template)
 
  **ALLOWED_HOSTS**, cuando lo subimos a producción con esta variable indicamos las ip o el dominio válido que pueden acceder al proyecto.  
 
- **INSTALLED_APPS**, contendrá nuestras aplicaciones y las aplicaciones que django incluye como: 
+ **INSTALLED_APPS**, contendrá nuestras aplicaciones y las aplicaciones que django incluye por defecto como: 
   - django.contrib.admin -> sistema de administración
+  - django.contrib.auth -> sistema de gestión de usuarios
   - django.contrib.contenttypes
   - django.contrib.sessions
   - django.contrib.messages -> permite enviar mensajes de validación/errores
@@ -101,6 +118,7 @@ Django sigue el patrón de diseño => M (modelo) - V (vista) - T (template)
 
 
  **MIDDLEWARE**, es como un plugin que se situa entre la comunicación de django y el cliente, todos los inputs y outputs pasan por los middlewares. En django se usan con un propósito de seguridad. por ejemplo está csrf ( que ya otros frameworks lo usan)
+
   -  'django.middleware.csrf.CsrfViewMiddleware', permite el envio de formularios  
 
  **ROOT_URLCONF**, es donde están las rutas principales de todo nuestro proyecto, apunta al archivo 'config/urls.py'   
@@ -109,10 +127,11 @@ Django sigue el patrón de diseño => M (modelo) - V (vista) - T (template)
   ```python
       TEMPLATES = [
       {
-          'BACKEND': 'django.template.backends.django.DjangoTemplates', # sistema de plantillas a usar
+          'BACKEND': 'django.template.backends.django.DjangoTemplates', # sistema de plantillas por defecto de Django
           'DIRS': [], # la ruta donde encontrará los templates 
-          'APP_DIRS': True, # en True indica que cuando el cliente solicite un template django la buscará en todo el proyecto incluid el directorio de apps 
-          'OPTIONS': {
+          'APP_DIRS': True, # en True indica que cuando el cliente solicite un template django la buscará en todo el proyecto incluido el directorio de apps, si no queremos este comportamiento
+                            # poner en False
+          'OPTIONS': {  # opciones para el procesa de los templates como tal
               'context_processors': [
                   'django.template.context_processors.debug',
                   'django.template.context_processors.request',
@@ -126,23 +145,60 @@ Django sigue el patrón de diseño => M (modelo) - V (vista) - T (template)
 
 **WSGI_APPLICATION**, esto es para producción indica al servidor cómo levantar nuestra aplicación y como recibirá las comunicaciones.  
 
+```python
+
+WSGI_APPLICATION = 'prueba.wsgi.application'
+
+```
+
+
 **DATABASES**, es la configuración de las bbdd q usará django por defecto usará sqlite3 pero puede usar postgresql, mysql mongodb.  
 
-**AUTH_PASSWORD_VALIDATORS**, es una sección que se encanrga de validad los passwords de los users y pone ciertas restricciónes como de longitud del pwd o que no sea igual/parecido al nombre del user,...  
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+```
+
+
+**AUTH_PASSWORD_VALIDATORS**, es una sección que se encanrga de validar los passwords de los users y pone ciertas restricciónes como de longitud del pwd o que no sea igual/parecido al nombre del user,...  
 
 **sección de Internationalization**, puedes configurar el idioma, time_zone, etc   
 
-sección de Static files (CSS, JavaScript, Images)
-  STATIC_URL, especifica dnd estrán nuestros archivos estáticos, por defecto está configurado para que busque los archivos en un directorio llamado `static` dentro de cada app. podemos modificar esta config y hacer que django tb busque en otras ubicaciones añadiendo lo siguiente:
-  ```python
-  STATICFILES_DIRS = [
-  BASE_DIR / "static", # creamos otro directorio static en la raiz del proyecto
-  
-  ] 
-  ```
+```python
+# Internationalization
+# https://docs.djangoproject.com/en/3.0/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True
+```
+**sección de Static files** (CSS, JavaScript, Images)
+
+STATIC_URL, especifica dnd estrán nuestros archivos estáticos, por defecto está configurado para que busque los archivos en un directorio llamado `static` dentro de cada app. podemos modificar esta config y hacer que django tb busque en otras ubicaciones añadiendo lo siguiente:
+
+```python
+
+STATIC_URL = '/static/' # path dnd van a estar los archivos estatáticos, ruta q se accede desde el navegador
+
+STATICFILES_DIRS = [
+
+BASE_DIR / "static", # creamos otro directorio static en la raiz del proyecto, donde guardará los archivos en local/servidor
+
+] 
+```
 ### archivo urls
 
-Es el arcivo principal de rutas para nuestro proyecto. Todo archivo urls.py tiene que tener su lista llamada `urlpatterns`
+Es el arcivo principal de rutas para nuestro proyecto. Todo archivo urls.py tiene que tener su list llamada `urlpatterns`
 
 ## Modelo-vista-template 
 
@@ -165,12 +221,28 @@ Para tener todo más organizado crearemos un directorio en la raíz del proyecto
 Hay dos comando para crear una aplicación:
 
 1. usando manage.py 
-   Si escogemos este método previamente debemos crear el directorio de la app dentro de apps.
+   Si escogemos este método previamente debemos crear el directorio con el nombre de la app (por ejemplo libro) dentro de apps.
    1. `python manage.py startapp libro apps/libro `
 2. usando el comando django-admin
    1. en este caso podemos situarnos directamente en el directorio apps y ejecutar el comando `django-admin startapp libro`
 
 Posteriormente debemos registrar la nueva app en el archivo settings.py en la lista de INSTALLED_APPS como `apps.libro`.
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    # owned apps
+    'apps.libro',
+]
+```
+
+
 
 ### Estructura de una aplicación
 
@@ -369,7 +441,20 @@ class Autor(models.Model):
     fecha_creacion = models.DateField('Fecha de creación',auto_now=True,auto_now_add=False)
 ```
 
-una vez creado nuestro modelo debemos exportarlo a la bbdd para ello usamos el comando `python manage.py makemigrations`. Este comando crea un archivo en la carpeta migrations de la app identificando todos los modelos de nuestra app y generando una estructura para que posteriormente se convertido a lenguaje sql. para realizar esto debemos ejecutar `python manage.py migrate`.
+- Los modelos pueden tener distintos tipos de datos:
+
+1. AutoField    => integer autoincremental
+2. CharField    => texto, marcamos la longitud
+3. TextField    => para texto muy extenso
+4. IntegerField => valores numéricos
+5. JSONField
+6. URLField
+7. ImageField
+8. FileField
+9. BooleanField
+
+
+una vez creado nuestro modelo debemos exportarlo a la bbdd para ello usamos el comando `python manage.py makemigrations`. Este comando crea un archivo en la carpeta migrations de la app identificando todos los modelos de nuestra app y generando una estructura para que posteriormente sea convertido a lenguaje sql. para realizar esto debemos ejecutar `python manage.py migrate`.
 
 Una vez hecho esto podemos acceder al modelo y comprobar que se ha creado correctamente entrando en la sección admin de django para ello arrancamos el server. `python manage.py runserver` por defecto en 127.0.0.1:8000 pero podemos especificar el puerto con `python manage.py runserver 127.0.0.1:8006/admin`. Para acceder necesitamos un password para ello creamos un superuser con `python manage.py createsuperuser`
 

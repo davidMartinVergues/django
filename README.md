@@ -13,7 +13,7 @@
   - [Primer DRF project - newsAPI -](#primer-drf-project---newsapi--)
     - [Serializer](#serializer)
     - [Creando una API view](#creando-una-api-view)
-      - [View_decorator](#view_decorator)
+      - [View\_decorator](#view_decorator)
       - [API view class](#api-view-class)
     - [Validation en DRF](#validation-en-drf)
     - [model serializer class](#model-serializer-class)
