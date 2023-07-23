@@ -36,10 +36,18 @@ obj1.save()
 
 ```
 
-## Recumerando objetos 
+## Recuperando objetos 
 
 ```python
 
 article_obj = Article.objects.get(id=2)
+# <Article: Article object (4)>
 articles_all = Article.objects.all()
+# <QuerySet [<Article: Article object (1)>, <Article: Article object (2)>]>
 ```
+
+* Cuando usamos get solo puede devolver un registro y el tipo de objeto que devuelve es el del modelo
+
+* cuando usamos all() nos devuelve un querySet es decir un array de objetos del tipo del modelo
+
+

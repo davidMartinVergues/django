@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 
 
-class ArticlesConfig(AppConfig):
+class Articles2Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.articles'
-
+    name = 'apps.articles2'
