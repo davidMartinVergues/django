@@ -4,6 +4,7 @@
     - [REST APIs vs RESTfull APIs](#rest-apis-vs-restfull-apis)
 - [Practicando algo de código](#practicando-algo-de-código)
   - [Realizando requests con python](#realizando-requests-con-python)
+- [Config VSCode para debug](#Config-VSCode-para-debug)
 - [Crear proyecto con Django](#crear-proyecto-con-django)
   - [Buenas practicas django](#buenas-practicas-django)
 - [Crear una API con django](#crear-una-api-con-django)
@@ -179,6 +180,43 @@ response = requests.get('https://jsonplaceholder.typicode.com/posts/1', params=p
 
 ```
 
+# Config VSCode para debug
+
+configurar vs code par que el debug ejecute en terminal. Poner esta configuración en la carpeta ".vscode-> launch.json" en la raíz del proyecto
+
+```
+{
+    // Use IntelliSense para saber los atributos posibles.
+    // Mantenga el puntero para ver las descripciones de los existentes atributos.
+    // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Django",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+            "justMyCode": true
+        },
+        {
+            "name": "Python: Django Shell",
+            "type": "python",
+            "request" : "launch",
+            "program" : "${workspaceFolder}\\manage.py",
+            "args": [
+                "shell"
+                ],
+                "django": true,
+                "justMyCode": true
+
+        }
+    ]
+}
+```
 # Crear proyecto con Django
 
 0. creo el directorio que contendrá el proyecto
