@@ -46,13 +46,66 @@ Con el objetivo de usar las github actions junto con dockerhub debemos configura
 ```dockerfile
 
 FROM python:3.9-alpine3.13
-LABEL maintainer="David"
+LABEL maintainer="David Martin"
 
 ENV PYTHONUNBUFFERED 1
 
+COPY ./requirements.txt /tmp/requirements.txt
+COPY ./app /app
+WORKDIR /app
+EXPOSE 8000
+
+RUN python -m venv /py && \
+    /py/bin/pip install --upgrade pip && \
+    /py/bin/pip install -r /tmp/requirements.txt && \
+    rm -rf /tmp && \
+    adduser \
+    --disabled-password \
+    --no-create-home \
+    django-user
+
+ENV PATH="/py/bin:$PATH"
+
+USER django-user
+
 ```
 
+* ENV PYTHONUNBUFFERED 1
+    esto es recomendable cuando ejecutamos python en un contenedor docker, esto le dice a python que no debe usar un buffer para la salida de este modo el output de python saldrá por consola
+
+* ENV PATH="/py/bin:$PATH"
+    permite añadir nuestro virtual environment a las variables de entorno de SSOO.
 
 
+También es importante crear un archivo dockerignore para excluir distintos archivos
 
 
+```dockerignore
+
+
+# Git
+.git
+.gitignore
+
+# Docker
+.docker
+
+# Python
+app/__pycache__/
+app/*/__pycache__/
+app/*/*/__pycache__/
+app/*/*/*/__pycache__/
+.env/
+.venv/
+venv/
+
+```
+Finalmente podemos construir la imagen de docker para ello lanzamos el comando de desde la terminal especificando el path dnd se encuentra el **Dockerfile**
+
+```
+docker --build .
+
+docker build ./recipe-api
+
+```
+### Docker configuration
