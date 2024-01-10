@@ -1,5 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>hello!!</h1>
+
+        
+    
+        <div class="container bg-light shadow-md p-5 form-layout">
+            <h3>Create your Account</h3>
+            <h5>Start managing your clients today!</h5>
+
+            <hr>
+            <br>
+
+            <form method="post" autocomplate='off'>
+                {% csrf_token %}
+
+                {% comment %} el .as_p es para dar styling al form {% endcomment %}
+                {{form.as_p}} 
+
+                <br>
+
+                <button type="submit" class="btn btn-primary w-100 btn-block p-2">Create account</button>
+            </form>
+
+            <br>
+
+            <div class="text-center">
+                <p>Already have an account?</p> <a href="{% url 'my-home'%}"> Login </a>
+            </div>
+        </div>
+
+        <br>
+    
+
 {% endblock content %}
