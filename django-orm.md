@@ -10,7 +10,7 @@
     - [QuerySet API](#queryset-api)
     - [data base backend](#data-base-backend)
   - [Conectar Django project a postgres](#conectar-django-project-a-postgres)
-    - [a un postgres local](#a-un-postgres-local)
+    - [A un postgres local](#a-un-postgres-local)
 
 
 # Django Database ORM Mastery
@@ -292,7 +292,7 @@ Está preconfigurado para trabajar con SQLite
 
 ## Conectar Django project a postgres 
 
-### a un postgres local
+### A un postgres local
 
 instalar el driver para conectar con postgres 
 
@@ -307,8 +307,8 @@ DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": 'orm_course',
-        "USER": 'postgres',
-        "PASSWORD": 'Anna20221.',
+        "USER": 'david',
+        "PASSWORD": 'dmv1104',
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for product in product_list %}
+      <p>Product: {{product.name}}</p>
+      <p>Manufacturar: {{product.manufacturer.name}}</p>
+      <p>Price: {{product.price}}</p>
+    {% endfor %}
+
+    <a href="{% url 'apps.products:home' %}">
+      <button>home</button>
+    </a>
+
+{% endblock content %}

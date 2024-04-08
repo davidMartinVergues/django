@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base_style.css'%}">
+    <script src="{% static 'js/base.js' %}" defer></script>
+    <title>API Django - class based views</title>
+</head>
+<body>
+      
+    
+    {% block content %}
+
+    <a type='button' href="{% url 'apps.products:product-list' %}">
+        <button>product-list</button>
+    </a>
+
+    
+    {% endblock content %}
+    
+</body>
+</html>
