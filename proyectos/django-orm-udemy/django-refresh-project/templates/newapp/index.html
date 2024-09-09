@@ -2,5 +2,6 @@
 
 {% block content %}
     <h2>Hello {{user.name}} from new app!</h2>
+    <a href="{% url 'newapp:home' %}">home</a>
 {% endblock content %}
 
