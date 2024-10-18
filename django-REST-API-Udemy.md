@@ -30,7 +30,7 @@ Con el objetivo de usar las github actions junto con dockerhub debemos configura
 ![not found](img/50.png)
 
 2. registrar en nuestro repo de github 2 secrets:
-   1. nombre del user de dockerhub
+   1. nombre del user de dockerhub - por ejemplo seria poner simplemnete "dmartinvergues"
    2. token para acceder a dockerhub
 
 ![not found](img/51png.png)
@@ -48,7 +48,7 @@ Con el objetivo de usar las github actions junto con dockerhub debemos configura
 FROM python:3.9-alpine3.13
 LABEL maintainer="David Martin"
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=~~1~~
 
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./app /app
@@ -103,12 +103,24 @@ venv/
 Finalmente podemos construir la imagen de docker para ello lanzamos el comando de desde la terminal especificando el path dnd se encuentra el **Dockerfile**
 
 ```
-docker --build .
+docker build . -t <images_name>
 
-docker build ./recipe-api
+docker build ./recipe-api -t <images_name>
 
 ```
 ### Dockercompose configuration
+
+
+ejecutaremos los comandos a traves de docker-compose, por ejemplo
+
+`docker-compose run --rm app sh -c "python manage.py collectstatic"`
+
+- docker-compose: execute a docker-compose 
+- run           : start a especific container definido en config
+- --rm          : se encarga de eliminar el contenedor una vez se cierra
+- app           : es el nombre del service 
+- sh -c         : indicamos q pase un comando a la terminal
+- "python manage.py collectstatic" : comando a ejecutar en el interior del contenedor
 
 ```yml
 
@@ -118,6 +130,7 @@ services:
   app:
     build:
       context: .
+    image: rest-api-project:latest
     ports:
       - "8000:8000"
     volumes:
@@ -130,9 +143,10 @@ services:
 2. "Services" es el bloque principal del dockercompose y puede tener uno o más de uno.
    1. app => es el nombre de nuestro servicio
    2. build -> context: . en esta sección indicamos dónde se encuentra el dockerfile que será las instrucciones para crear la imagen
-   3. ports -> mapea los puertos del contenedor con los de nuestra máquina en local
-   4. volumnes -> los volumenes permiten persistir los datos que se generan dentro del contenedor, esto es bidireccional así que cuando le damos una ruta de nuestro localse copia su contenido en el contenedor y viceversa.
-   5. command -> es la instrucción que se ejecutará en el interior del contenedor cuando ejecutemos el docker-compose.
+   3. image => nombre q tendra la imagen resultante
+   4. ports -> mapea los puertos del contenedor con los de nuestra máquina en local
+   5. volumnes -> los volumenes permiten persistir los datos que se generan dentro del contenedor, esto es bidireccional así que cuando le damos una ruta de nuestro localse copia su contenido en el contenedor y viceversa.
+   6. command -> es la instrucción que se ejecutará en el interior del contenedor cuando ejecutemos el docker-compose.
 
 
 Para ejecutar el docker-compose:
@@ -157,7 +171,11 @@ La herramienta que utilizaremos es:
 docker-compose run --rm app sh -c "flake8"
 ```
 
+esta instarucción nos sacara en consola los errores que tenemos en el código.
+
 el flag:
+
+* "docker-compose run" ste es el comando de Docker Compose para ejecutar un contenedor de servicio definido en el archivo docker-compose.yml. La diferencia con `docker-compose up` es que `run` ejecuta un servicio en modo interactivo o temporal (solo por una vez), mientras que `up` levanta y ejecuta los servicios definidos de forma persistente (en segundo plano o primer plano).
 
 * "--rm" permite eliminar el contenedor una vez lo paremos así no vamos dejando contenedores huérfanos.
 
@@ -195,7 +213,7 @@ esto hará que si ejecutamos el dockerfile a través del compose seteará la var
 FROM python:3.9-alpine3.13
 LABEL maintainer="David Martin"
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
@@ -256,11 +274,22 @@ docker-compose run --rm app sh -c "python manage.py test"
 ```
 docker-compose run --rm app sh -c "django-admin startproject app ."
 ```
+**Puede ser q el comando dé error por falta de permisos en el directorio, para ello `sudo chmod -R 777 ./app`**
+
 2. levantamnos nuestros servicios y ya podremos ver django funcionando
 
 ```shell
 docker-compose up
 ```
+Si queremos conocer la IP de nuestra maquina dentro de la red de docker para poder conectar x ejemplo un postgres q tengamos en local con nuestro contenedor, 
+no podemos usar directamente localhost (127.0.0.1) tenemos q usar la IP de nuestra maquina en la red de docker
+y para averiguarlo usamos el comando:
+
+```
+ip addr show docker0
+```
+normalmente `172.17.0.1`
+
 ## GitHub Actions
 
 Es una herramienta de automatización parecido a Jenkins. Simplemente github actions permiten ejecutar ciertas tasks automáticamente cuando el código cambia. 
@@ -284,14 +313,24 @@ Para conseguir esto primero debemos configurar un trigger, hay varios pero nosot
    2. añadir los comandos para ejecutar los tests y el code linting
 2. Configurar DockerHub auth
 
+Inciso sobre Docker Hub
 
-En primer lugar debemos crear el archivo de config en el root directory del proyecto ".github/workflows/checks.yml"
+Docker Hub es un repositorio de imagenes de docker, cada vez que hacemos `docker push` subimos esa imagen de docker a docker hub, por defecto se pueden hacer 200 push por cada 6 horas (rate limits).  
+
+cuando corremos github actions haremos push a dockerhub por eso necesitamos las credenciales para autenticarnos ya que para tener 200 push x 6 h necesitamos estar autenticados. Como para detectar los push dockerhub lo hace por IP y podemos estar trabajando en varios proyectos es mejor autenticarnos y conseguir estos 200 push
+
+En primer lugar debemos crear el archivo de config en el root directory del proyecto. 
+creamos una carpeta `.github` 
+
+`.github/workflows/checks.yml`
+
+
 
 ```
 ---
 name: Checks
 
-on: [push]
+on: [push] # trigger
 
 jobs:
   test-lint:
@@ -319,3 +358,5 @@ Los `steps` se van ejecutando secuencialmente y solo pasa al siguiente si se ha 
 En github actions podemos usar acciones predefinidas en github o crear nuestra action. En `uses` especificaremos qué action queremos usar el nombre `docker/login-action@v1` es una ya predefinida para logearse en dockerhub.
 
 Después del login en dockerhub necesitamos que nuestro código esté disponible para las github actions para ello necesitamos el `step Checkout`
+
+Si alguno de de estos pasos falla el job de github actions fallara tb 

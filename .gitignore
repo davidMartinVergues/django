@@ -12,6 +12,7 @@ Icon
 
 
 *_venv
+.env/*
 # Thumbnails
 ._*
 
